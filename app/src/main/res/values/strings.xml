@@ -1,0 +1,20 @@
+<resources>
+    <string name="app_name">TeamvoyApplication</string>
+    <string name="api_key">ac912fa38d17101e80a440ae239d6a94</string>
+
+    <string-array name="fragment_array">
+        <item>List</item>
+        <item>Grid</item>
+    </string-array>
+
+    <string-array name="sort_array">
+        <item>Rating</item>
+        <item>Trending</item>
+    </string-array>
+
+    <string-array name="count_array">
+        <item>9</item>
+        <item>18</item>
+        <item>30</item>
+    </string-array>
+</resources>
