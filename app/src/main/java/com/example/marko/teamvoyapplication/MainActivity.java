@@ -24,10 +24,13 @@ import org.json.JSONObject;
 import android.app.Activity;
 import android.app.FragmentManager;
 import android.app.FragmentTransaction;
+import android.app.ProgressDialog;
+import android.content.DialogInterface;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.os.AsyncTask;
 import android.os.Bundle;
+import android.support.v7.app.AlertDialog;
 import android.text.Html;
 import android.view.View;
 import android.widget.AdapterView;
@@ -77,7 +80,7 @@ public class MainActivity extends Activity {
         fragment_spinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
             @Override
             public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
-                if(position==0)
+                if (position == 0)
                     setListFragment(recipeList);
                 else
                     setGridFragment(recipeList);
@@ -146,11 +149,22 @@ public class MainActivity extends Activity {
     }
 
 
-    class RetrieveFeedTask extends AsyncTask<String, Void, List<Recipe>> {
+    class RetrieveFeedTask extends AsyncTask<String, String, List<Recipe>> {
 
+        private ProgressDialog dialog;
+
+        public RetrieveFeedTask() {
+            dialog = new ProgressDialog(MainActivity.this);
+        }
+
+
+        protected void onPreExecute() {
+            this.dialog.setMessage("Please wait for request");
+            this.dialog.show();
+        }
 
         protected List<Recipe> doInBackground(String... urls) {
-            // android.os.Debug.waitForDebugger();
+          //  android.os.Debug.waitForDebugger();
             recipeList = new ArrayList<>();
             JSONArray jsonArray = null;
             HttpClient client = new DefaultHttpClient();
@@ -161,6 +175,12 @@ public class MainActivity extends Activity {
 
                 BufferedReader reader = new BufferedReader(new InputStreamReader(response.getEntity().getContent(), "UTF-8"));
                 String json = reader.readLine();
+                if (json.contains("error")) {
+
+                    publishProgress("Server is no response");
+                    return null;
+
+                }
                 JSONObject mainJsonObject = new JSONObject(json);
                 jsonArray = mainJsonObject.getJSONArray("recipes");
 
@@ -200,13 +220,45 @@ public class MainActivity extends Activity {
             return recipeList;
         }
 
+        @Override
+        protected void onProgressUpdate(String... values) {
+            super.onProgressUpdate(values);
+            if (dialog.isShowing()) {
+                dialog.dismiss();
+            }
+            showErrorDialog(values[0]);
+
+        }
+
         protected void onPostExecute(List<Recipe> recipes) {
+
+            if (dialog.isShowing()) {
+                dialog.dismiss();
+            }
 
             if (fragment_spinner.getSelectedItem().toString().equals("List"))
                 setListFragment(recipes);
             else
                 setGridFragment(recipes);
         }
+    }
+
+    private void showErrorDialog(final String massage) {
+        runOnUiThread(new Runnable() {
+            public void run() {
+                final android.app.AlertDialog.Builder dialog = new android.app.AlertDialog.Builder(MainActivity.this).setTitle("Error")
+                        .setMessage(massage);
+                dialog.setNegativeButton("Confirm", new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int whichButton) {
+                        dialog.cancel();
+
+                    }
+                });
+                final android.app.AlertDialog alert = dialog.create();
+                alert.show();
+            }
+        });
     }
 
     private void setListFragment(List<Recipe> recipes) {
