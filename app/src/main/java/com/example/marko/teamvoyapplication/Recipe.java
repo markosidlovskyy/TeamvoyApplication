@@ -1,15 +1,46 @@
 package com.example.marko.teamvoyapplication;
 
 import android.graphics.Bitmap;
+import android.os.Parcel;
+import android.os.Parcelable;
+
+import java.io.Serializable;
 
 /**
  * Created by Marko on 5/31/2016.
  */
-public class Recipe {
+public class Recipe implements Parcelable {
 
     String social_rank, f2f_url, title, source_url, publisher, recipe_id, image_url, publisher_url;
     Bitmap image;
 
+    Recipe() {
+
+    }
+
+    protected Recipe(Parcel in) {
+        social_rank = in.readString();
+        f2f_url = in.readString();
+        title = in.readString();
+        source_url = in.readString();
+        publisher = in.readString();
+        recipe_id = in.readString();
+        image_url = in.readString();
+        publisher_url = in.readString();
+        image = in.readParcelable(Bitmap.class.getClassLoader());
+    }
+
+    public static final Creator<Recipe> CREATOR = new Creator<Recipe>() {
+        @Override
+        public Recipe createFromParcel(Parcel in) {
+            return new Recipe(in);
+        }
+
+        @Override
+        public Recipe[] newArray(int size) {
+            return new Recipe[size];
+        }
+    };
 
     public Bitmap getImage() {
         return image;
@@ -81,5 +112,23 @@ public class Recipe {
 
     public void setImage_url(String image_url) {
         this.image_url = image_url;
+    }
+
+    @Override
+    public int describeContents() {
+        return 0;
+    }
+
+    @Override
+    public void writeToParcel(Parcel dest, int flags) {
+        dest.writeString(social_rank);
+        dest.writeString(f2f_url);
+        dest.writeString(title);
+        dest.writeString(source_url);
+        dest.writeString(publisher);
+        dest.writeString(recipe_id);
+        dest.writeString(image_url);
+        dest.writeString(publisher_url);
+        dest.writeParcelable(image, flags);
     }
 }

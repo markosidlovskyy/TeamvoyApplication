@@ -13,7 +13,7 @@ import java.util.List;
 /**
  * Created by Marko on 5/31/2016.
  */
-public class ListAdapter extends ArrayAdapter<Recipe> {
+public class ListAdapter extends ArrayAdapter<Recipe> implements View.OnClickListener {
     Context context;
     List<Recipe> recipes;
 
@@ -31,7 +31,11 @@ public class ListAdapter extends ArrayAdapter<Recipe> {
     @Override
     public View getView(int position, View convertView, ViewGroup parent) {
         LayoutInflater inflater = (LayoutInflater) context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
-        View row = inflater.inflate(R.layout.receipes_list_item, parent, false);
+
+        View row = null;
+        if (convertView == null) {
+            row = inflater.inflate(R.layout.receipes_list_item, parent, false);
+        } else row = convertView;
 
         TextView title = (TextView) row.findViewById(R.id.recipe_title);
         TextView rating = (TextView) row.findViewById(R.id.recipe_rait);
@@ -41,6 +45,12 @@ public class ListAdapter extends ArrayAdapter<Recipe> {
         rating.setText(recipes.get(position).getSocial_rank());
         image.setImageBitmap(recipes.get(position).getImage());
 
+        row.setOnClickListener(new ItemOnClick(context, recipes.get(position)));
         return row;
+    }
+
+    @Override
+    public void onClick(View v) {
+
     }
 }
