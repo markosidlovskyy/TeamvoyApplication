@@ -8,6 +8,7 @@ import android.widget.ArrayAdapter;
 import android.widget.ImageView;
 import android.widget.TextView;
 
+import java.text.DecimalFormat;
 import java.util.List;
 
 /**
@@ -32,14 +33,22 @@ public class GridAdapter extends ArrayAdapter<Recipe> {
     public View getView(int position, View convertView, ViewGroup parent) {
 
         LayoutInflater inflater = (LayoutInflater) context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
-        View view=inflater.inflate(R.layout.recipe_grid_item,parent,false);
+        View view;
+
+        if (convertView == null)
+            view = inflater.inflate(R.layout.recipe_grid_item, parent, false);
+        else view = convertView;
+
         TextView title = (TextView) view.findViewById(R.id.recipe_title);
         TextView rating = (TextView) view.findViewById(R.id.recipe_rait);
         ImageView image = (ImageView) view.findViewById(R.id.recipe_img);
 
         title.setText(recipeList.get(position).getTitle());
-        rating.setText(recipeList.get(position).getSocial_rank());
+        float rank= Float.parseFloat(recipeList.get(position).getSocial_rank());
+        rating.setText(new DecimalFormat("###.##").format(rank));
         image.setImageBitmap(recipeList.get(position).getImage());
+        view.setOnClickListener(new ItemOnClick(context, recipeList.get(position)));
+
         return view;
     }
 }

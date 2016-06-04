@@ -30,6 +30,7 @@ import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.os.AsyncTask;
 import android.os.Bundle;
+import android.os.Parcelable;
 import android.support.v7.app.AlertDialog;
 import android.text.Html;
 import android.view.View;
@@ -54,11 +55,14 @@ public class MainActivity extends Activity {
     Button search_button;
     List<Recipe> recipeList;
     int count = 9;
+    RetrieveFeedTask retrieveFeedTask;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+
+        retrieveFeedTask = new RetrieveFeedTask();
         api_key = getString(R.string.api_key);
 
         view_txt = (TextView) findViewById(R.id.fragment_txt);
@@ -73,7 +77,7 @@ public class MainActivity extends Activity {
         count_spinner = (Spinner) findViewById(R.id.count_spiner);
 
         ArrayAdapter<CharSequence> adapterFragment = ArrayAdapter.createFromResource(this,
-                R.array.fragment_array, android.R.layout.simple_spinner_item);
+                R.array.fragment_array, R.layout.spinner_item);
         adapterFragment.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
         fragment_spinner.setAdapter(adapterFragment);
 
@@ -94,12 +98,12 @@ public class MainActivity extends Activity {
 
 
         ArrayAdapter<CharSequence> adapterSort = ArrayAdapter.createFromResource(this,
-                R.array.sort_array, android.R.layout.simple_spinner_item);
+                R.array.sort_array, R.layout.spinner_item);
         adapterSort.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
         sort_spinner.setAdapter(adapterSort);
 
         ArrayAdapter<CharSequence> adapterCount = ArrayAdapter.createFromResource(this,
-                R.array.count_array, android.R.layout.simple_spinner_item);
+                R.array.count_array, R.layout.spinner_item);
         adapterCount.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
         count_spinner.setAdapter(adapterCount);
         count_spinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
@@ -128,7 +132,7 @@ public class MainActivity extends Activity {
             @Override
             public void onClick(View v) {
 
-                RetrieveFeedTask retrieveFeedTask = new RetrieveFeedTask();
+
                 String searchText = "", sort;
                 if (sort_spinner.getSelectedItem().toString().equals("Rating"))
                     sort = "r";
@@ -141,11 +145,12 @@ public class MainActivity extends Activity {
                     e.printStackTrace();
                 }
 
+                retrieveFeedTask = new RetrieveFeedTask();
                 retrieveFeedTask.execute(url_search + "?key=" + api_key + "&q=" + searchText + "&sort=" + sort);
             }
         });
 
-
+        retrieveFeedTask.execute(url_search + "?key=" + api_key);
     }
 
 
@@ -164,7 +169,7 @@ public class MainActivity extends Activity {
         }
 
         protected List<Recipe> doInBackground(String... urls) {
-          //  android.os.Debug.waitForDebugger();
+            //  android.os.Debug.waitForDebugger();
             recipeList = new ArrayList<>();
             JSONArray jsonArray = null;
             HttpClient client = new DefaultHttpClient();
@@ -290,4 +295,5 @@ public class MainActivity extends Activity {
         fragmentTransaction.replace(R.id.fragment_container, gridFragment, "1");
         fragmentTransaction.commit();
     }
+
 }

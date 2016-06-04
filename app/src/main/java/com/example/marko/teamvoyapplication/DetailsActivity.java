@@ -3,12 +3,14 @@ package com.example.marko.teamvoyapplication;
 import android.app.Activity;
 import android.app.ProgressDialog;
 import android.content.Intent;
+import android.content.res.Configuration;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.text.Html;
+import android.util.DisplayMetrics;
 import android.view.View;
 import android.widget.ImageView;
 import android.widget.TextView;
@@ -27,6 +29,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.net.MalformedURLException;
+import java.text.DecimalFormat;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -39,6 +42,8 @@ public class DetailsActivity extends Activity {
     ImageView image;
     TextView title, rating, description, ingredientTxt, publisherTxt, publisherTitle;
     List<String> ingredients;
+    GetRecipeTask getRecipeTask;
+    Recipe recipe;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -47,7 +52,7 @@ public class DetailsActivity extends Activity {
 
         api_key = getString(R.string.api_key);
         ingredients = new ArrayList<String>();
-
+        recipe = new Recipe();
         Bundle bundle = getIntent().getExtras();
         String recipeId = bundle.getString("recipe_id");
 
@@ -57,9 +62,9 @@ public class DetailsActivity extends Activity {
         description = (TextView) findViewById(R.id.description_txt);
         ingredientTxt = (TextView) findViewById(R.id.ingredient);
         publisherTxt = (TextView) findViewById(R.id.publisher);
-        publisherTitle=(TextView) findViewById(R.id.publisher_title);
+        publisherTitle = (TextView) findViewById(R.id.publisher_title);
 
-        GetRecipeTask getRecipeTask = new GetRecipeTask();
+        getRecipeTask = new GetRecipeTask();
         getRecipeTask.execute(urlGet + "?key=" + api_key + "&rId=" + recipeId);
 
     }
@@ -81,7 +86,7 @@ public class DetailsActivity extends Activity {
 
         protected Recipe doInBackground(String... urls) {
             //  android.os.Debug.waitForDebugger();
-            Recipe recipe = new Recipe();
+
 
             JSONArray jsonArray = null;
             HttpClient client = new DefaultHttpClient();
@@ -129,15 +134,23 @@ public class DetailsActivity extends Activity {
 
         }
 
+        @Override
+        protected void onCancelled() {
+            super.onCancelled();
+        }
+
         protected void onPostExecute(final Recipe recipe) {
 
             if (dialog.isShowing()) {
                 dialog.dismiss();
             }
 
+            Bitmap bitmap = resizeBitMap(recipe.getImage(), image);
+
             image.setImageBitmap(recipe.getImage());
             title.setText(recipe.getTitle());
-            rating.setText("rating: " + recipe.getSocial_rank());
+            float rank= Float.parseFloat(recipe.getSocial_rank());
+            rating.setText("rating: " + new DecimalFormat("###.##").format(rank));
 
             StringBuilder builder = new StringBuilder();
             for (String details : ingredients) {
@@ -158,6 +171,35 @@ public class DetailsActivity extends Activity {
                 }
             });
         }
+    }
+
+    private Bitmap resizeBitMap(Bitmap image, ImageView imageView) {
+
+        float height = image.getHeight();
+        float width = image.getWidth();
+        DisplayMetrics displayMetrics = getResources().getDisplayMetrics();
+        int density = (int) displayMetrics.density;
+
+        if (width / density < 150)
+            return image;
+
+
+        float d = width / height;
+        android.view.ViewGroup.LayoutParams layoutParams = imageView.getLayoutParams();
+        layoutParams.width = 150 * density;
+        layoutParams.height = (int) ((150 * density) / d);
+
+        imageView.setLayoutParams(layoutParams);
+
+
+        return image;
+    }
+
+    @Override
+    protected void onStop() {
+        super.onStop();
+        if (getRecipeTask != null)
+            getRecipeTask.cancel(false);
     }
 
 

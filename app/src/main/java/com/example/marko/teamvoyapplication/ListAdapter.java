@@ -8,6 +8,7 @@ import android.widget.ArrayAdapter;
 import android.widget.ImageView;
 import android.widget.TextView;
 
+import java.text.DecimalFormat;
 import java.util.List;
 
 /**
@@ -32,7 +33,7 @@ public class ListAdapter extends ArrayAdapter<Recipe> implements View.OnClickLis
     public View getView(int position, View convertView, ViewGroup parent) {
         LayoutInflater inflater = (LayoutInflater) context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
 
-        View row = null;
+        View row;
         if (convertView == null) {
             row = inflater.inflate(R.layout.receipes_list_item, parent, false);
         } else row = convertView;
@@ -42,7 +43,8 @@ public class ListAdapter extends ArrayAdapter<Recipe> implements View.OnClickLis
         ImageView image = (ImageView) row.findViewById(R.id.recipe_img);
 
         title.setText(recipes.get(position).getTitle());
-        rating.setText(recipes.get(position).getSocial_rank());
+        float rank= Float.parseFloat(recipes.get(position).getSocial_rank());
+        rating.setText(new DecimalFormat("###.##").format(rank));
         image.setImageBitmap(recipes.get(position).getImage());
 
         row.setOnClickListener(new ItemOnClick(context, recipes.get(position)));

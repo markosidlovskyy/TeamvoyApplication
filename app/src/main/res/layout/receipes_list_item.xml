@@ -27,6 +27,5 @@
         android:layout_gravity="center_vertical"
         android:layout_alignParentRight="true"
         android:layout_centerVertical="true"
-        android:layout_marginRight="20dp"
-        android:maxLength="5" />
+        android:layout_marginRight="20dp" />
 </RelativeLayout>
