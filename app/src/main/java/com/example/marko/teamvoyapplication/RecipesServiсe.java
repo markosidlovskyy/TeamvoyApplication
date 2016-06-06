@@ -5,7 +5,6 @@ import android.graphics.BitmapFactory;
 import android.text.Html;
 
 import org.apache.http.HttpResponse;
-import org.apache.http.client.ClientProtocolException;
 import org.apache.http.client.HttpClient;
 import org.apache.http.client.methods.HttpGet;
 import org.apache.http.impl.client.DefaultHttpClient;
@@ -17,7 +16,6 @@ import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
-import java.net.MalformedURLException;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -28,7 +26,7 @@ public class RecipesServiсe {
 
     List<Recipe> recipeList;
 
-    public List<Recipe> getRecipeList(String url, int count) throws Exception {
+    public List<Recipe> getRecipeList(String url, int count) throws InternalErrorException, JSONException, IOException {
         JSONArray jsonArray = null;
         recipeList = new ArrayList<>();
         HttpClient client = new DefaultHttpClient();
@@ -40,7 +38,7 @@ public class RecipesServiсe {
         BufferedReader reader = new BufferedReader(new InputStreamReader(response.getEntity().getContent(), "UTF-8"));
         String json = reader.readLine();
         if (json.contains("error")) {
-            throw new Exception("Internal error");
+            throw new InternalErrorException();
         }
 
         JSONObject mainJsonObject = new JSONObject(json);
@@ -69,5 +67,7 @@ public class RecipesServiсe {
 
         return recipeList;
     }
+
+
 
 }

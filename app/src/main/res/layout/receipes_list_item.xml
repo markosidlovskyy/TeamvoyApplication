@@ -18,7 +18,11 @@
         android:layout_toRightOf="@+id/recipe_img"
         android:layout_alignParentBottom="false"
         android:layout_centerVertical="true"
-        android:maxLength="25" />
+        android:textColor="#000000"
+        android:textSize="15dp"
+        android:layout_toLeftOf="@+id/recipe_rait"
+        android:layout_marginRight="20dp"
+        android:minLines="2" />
 
     <TextView
         android:layout_width="wrap_content"
@@ -27,5 +31,7 @@
         android:layout_gravity="center_vertical"
         android:layout_alignParentRight="true"
         android:layout_centerVertical="true"
-        android:layout_marginRight="20dp" />
+        android:layout_marginRight="20dp"
+        android:textSize="13dp"
+        android:textColor="#000000" />
 </RelativeLayout>

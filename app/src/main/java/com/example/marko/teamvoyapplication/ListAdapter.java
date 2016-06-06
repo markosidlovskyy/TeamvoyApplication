@@ -14,7 +14,7 @@ import java.util.List;
 /**
  * Created by Marko on 5/31/2016.
  */
-public class ListAdapter extends ArrayAdapter<Recipe> implements View.OnClickListener {
+public class ListAdapter extends ArrayAdapter<Recipe> {
     Context context;
     List<Recipe> recipes;
 
@@ -43,16 +43,11 @@ public class ListAdapter extends ArrayAdapter<Recipe> implements View.OnClickLis
         ImageView image = (ImageView) row.findViewById(R.id.recipe_img);
 
         title.setText(recipes.get(position).getTitle());
-        float rank= Float.parseFloat(recipes.get(position).getSocial_rank());
+        float rank = Float.parseFloat(recipes.get(position).getSocial_rank());
         rating.setText(new DecimalFormat("###.##").format(rank));
         image.setImageBitmap(recipes.get(position).getImage());
 
         row.setOnClickListener(new ItemOnClick(context, recipes.get(position)));
         return row;
-    }
-
-    @Override
-    public void onClick(View v) {
-
     }
 }

@@ -3,7 +3,6 @@ package com.example.marko.teamvoyapplication;
 import android.app.Activity;
 import android.app.ProgressDialog;
 import android.content.Intent;
-import android.content.res.Configuration;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.net.Uri;
@@ -83,7 +82,6 @@ public class DetailsActivity extends Activity {
         }
 
         protected Recipe doInBackground(String... urls) {
-            //  android.os.Debug.waitForDebugger();
 
             JSONArray jsonArray = null;
             HttpClient client = new DefaultHttpClient();
@@ -108,20 +106,11 @@ public class DetailsActivity extends Activity {
                     ingredients.add(jsonArray.get(i).toString());
                 }
 
-                try {
+                InputStream in = new java.net.URL(recipe.getImage_url()).openStream();
+                Bitmap bitmap = BitmapFactory.decodeStream(in);
+                recipe.setImage(bitmap);
 
-                    InputStream in = new java.net.URL(recipe.getImage_url()).openStream();
-                    Bitmap bitmap = BitmapFactory.decodeStream(in);
-                    recipe.setImage(bitmap);
-                } catch (MalformedURLException e) {
-                    e.printStackTrace();
-                }
-
-            } catch (ClientProtocolException e) {
-                e.printStackTrace();
-            } catch (IOException e) {
-                e.printStackTrace();
-            } catch (JSONException e) {
+            } catch (JSONException | IOException e) {
                 e.printStackTrace();
             }
 
@@ -143,7 +132,7 @@ public class DetailsActivity extends Activity {
 
             image.setImageBitmap(recipe.getImage());
             title.setText(recipe.getTitle());
-            float rank= Float.parseFloat(recipe.getSocial_rank());
+            float rank = Float.parseFloat(recipe.getSocial_rank());
             rating.setText("rating: " + new DecimalFormat("###.##").format(rank));
 
             StringBuilder builder = new StringBuilder();
