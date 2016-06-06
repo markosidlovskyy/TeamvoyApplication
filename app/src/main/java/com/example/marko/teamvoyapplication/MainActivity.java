@@ -25,9 +25,11 @@ import android.app.Activity;
 import android.app.FragmentManager;
 import android.app.FragmentTransaction;
 import android.app.ProgressDialog;
+import android.content.Context;
 import android.content.DialogInterface;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
+import android.net.ConnectivityManager;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.os.Parcelable;
@@ -144,12 +146,16 @@ public class MainActivity extends Activity {
                     e.printStackTrace();
                 }
 
-                retrieveFeedTask = new RetrieveFeedTask();
-                retrieveFeedTask.execute(url_search + "?key=" + api_key + "&q=" + searchText + "&sort=" + sort);
+
+                if (isNetworkConnected()) {
+                    retrieveFeedTask = new RetrieveFeedTask();
+                    retrieveFeedTask.execute(url_search + "?key=" + api_key + "&q=" + searchText + "&sort=" + sort);
+                } else showErrorDialog("Please check your internet connection");
             }
         });
-
-        retrieveFeedTask.execute(url_search + "?key=" + api_key);
+        if (isNetworkConnected())
+            retrieveFeedTask.execute(url_search + "?key=" + api_key);
+        else showErrorDialog("Please check your internet connection");
     }
 
     class RetrieveFeedTask extends AsyncTask<String, String, List<Recipe>> {
@@ -166,12 +172,18 @@ public class MainActivity extends Activity {
         }
 
         protected List<Recipe> doInBackground(String... urls) {
+
             recipesServiсe = new RecipesServiсe();
             try {
                 recipeList = recipesServiсe.getRecipeList(urls[0], count);
             } catch (JSONException e) {
-                publishProgress("Server is not responding");
-                return null;
+                e.printStackTrace();
+            } catch (IOException e) {
+                e.printStackTrace();
+            } catch (Exception e) {
+                if (e.getMessage().equals("Internal error")) {
+                    publishProgress("Server return: Internal error");
+                }
             }
 
             return recipeList;
@@ -244,5 +256,11 @@ public class MainActivity extends Activity {
         fragmentTransaction = fragmentManager.beginTransaction();
         fragmentTransaction.replace(R.id.fragment_container, gridFragment, "1");
         fragmentTransaction.commit();
+    }
+
+    private boolean isNetworkConnected() {
+        ConnectivityManager cm = (ConnectivityManager) getSystemService(Context.CONNECTIVITY_SERVICE);
+
+        return cm.getActiveNetworkInfo() != null;
     }
 }

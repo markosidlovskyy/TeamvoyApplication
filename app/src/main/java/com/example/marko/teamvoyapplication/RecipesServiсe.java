@@ -28,51 +28,46 @@ public class RecipesServiсe {
 
     List<Recipe> recipeList;
 
-    public List<Recipe> getRecipeList(String url, int count) throws JSONException {
+    public List<Recipe> getRecipeList(String url, int count) throws Exception {
         JSONArray jsonArray = null;
         recipeList = new ArrayList<>();
         HttpClient client = new DefaultHttpClient();
         HttpGet request = new HttpGet(url);
         HttpResponse response;
-        try {
-            response = client.execute(request);
 
-            BufferedReader reader = new BufferedReader(new InputStreamReader(response.getEntity().getContent(), "UTF-8"));
-            String json = reader.readLine();
+        response = client.execute(request);
 
-            JSONObject mainJsonObject = new JSONObject(json);
-            jsonArray = mainJsonObject.getJSONArray("recipes");
+        BufferedReader reader = new BufferedReader(new InputStreamReader(response.getEntity().getContent(), "UTF-8"));
+        String json = reader.readLine();
+        if (json.contains("error")) {
+            throw new Exception("Internal error");
+        }
 
-            for (int i = 0; i < jsonArray.length() && i < count; i++) {
+        JSONObject mainJsonObject = new JSONObject(json);
+        jsonArray = mainJsonObject.getJSONArray("recipes");
 
-                Recipe recipe = new Recipe();
+        for (int i = 0; i < jsonArray.length() && i < count; i++) {
 
-                JSONObject jsonObject = jsonArray.getJSONObject(i);
-                recipe.setPublisher(Html.fromHtml(jsonObject.getString("publisher")).toString());
-                recipe.setSocial_rank(Html.fromHtml(jsonObject.getString("social_rank")).toString());
-                recipe.setF2f_url(Html.fromHtml(jsonObject.getString("f2f_url")).toString());
-                recipe.setTitle(Html.fromHtml(jsonObject.getString("title")).toString());
-                recipe.setSource_url(Html.fromHtml(jsonObject.getString("source_url")).toString());
-                recipe.setRecipe_id(Html.fromHtml(jsonObject.getString("recipe_id")).toString());
-                recipe.setImage_url(Html.fromHtml(jsonObject.getString("image_url")).toString());
-                recipe.setPublisher_url(Html.fromHtml(jsonObject.getString("publisher_url")).toString());
-                try {
+            Recipe recipe = new Recipe();
 
-                    InputStream in = new java.net.URL(recipe.getImage_url()).openStream();
-                    Bitmap bitmap = BitmapFactory.decodeStream(in);
-                    recipe.setImage(bitmap);
-                } catch (MalformedURLException e) {
-                    e.printStackTrace();
-                }
+            JSONObject jsonObject = jsonArray.getJSONObject(i);
+            recipe.setPublisher(Html.fromHtml(jsonObject.getString("publisher")).toString());
+            recipe.setSocial_rank(Html.fromHtml(jsonObject.getString("social_rank")).toString());
+            recipe.setF2f_url(Html.fromHtml(jsonObject.getString("f2f_url")).toString());
+            recipe.setTitle(Html.fromHtml(jsonObject.getString("title")).toString());
+            recipe.setSource_url(Html.fromHtml(jsonObject.getString("source_url")).toString());
+            recipe.setRecipe_id(Html.fromHtml(jsonObject.getString("recipe_id")).toString());
+            recipe.setImage_url(Html.fromHtml(jsonObject.getString("image_url")).toString());
+            recipe.setPublisher_url(Html.fromHtml(jsonObject.getString("publisher_url")).toString());
 
-                recipeList.add(recipe);
-            }
-        } catch (ClientProtocolException e) {
-            e.printStackTrace();
-        } catch (IOException e) {
-            e.printStackTrace();
+            InputStream in = new java.net.URL(recipe.getImage_url()).openStream();
+            Bitmap bitmap = BitmapFactory.decodeStream(in);
+            recipe.setImage(bitmap);
+
+            recipeList.add(recipe);
         }
 
         return recipeList;
     }
+
 }

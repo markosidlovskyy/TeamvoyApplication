@@ -23,7 +23,7 @@
                 android:layout_marginLeft="10dp"
                 android:text="View:"
                 android:textColor="@color/abc_primary_text_disable_only_material_light"
-                android:textSize="12dp"
+                android:textSize="13dp"
                 android:layout_centerVertical="true" />
 
             <Spinner
@@ -42,7 +42,7 @@
                 android:layout_toRightOf="@+id/fragment_spiner"
                 android:text="Sort By:"
                 android:textColor="@color/abc_primary_text_disable_only_material_light"
-                android:textSize="12dp"
+                android:textSize="13dp"
                 android:layout_centerVertical="true" />
 
             <Spinner
@@ -61,7 +61,7 @@
                 android:layout_toRightOf="@+id/sort_spiner"
                 android:text="Count:"
                 android:textColor="@color/abc_primary_text_disable_only_material_light"
-                android:textSize="12dp"
+                android:textSize="13dp"
                 android:layout_centerVertical="true" />
 
             <Spinner
