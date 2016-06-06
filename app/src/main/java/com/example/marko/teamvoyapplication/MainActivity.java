@@ -56,6 +56,7 @@ public class MainActivity extends Activity {
     List<Recipe> recipeList;
     int count = 9;
     RetrieveFeedTask retrieveFeedTask;
+    RecipesServiсe recipesServiсe;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -96,7 +97,6 @@ public class MainActivity extends Activity {
             }
         });
 
-
         ArrayAdapter<CharSequence> adapterSort = ArrayAdapter.createFromResource(this,
                 R.array.sort_array, R.layout.spinner_item);
         adapterSort.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
@@ -132,7 +132,6 @@ public class MainActivity extends Activity {
             @Override
             public void onClick(View v) {
 
-
                 String searchText = "", sort;
                 if (sort_spinner.getSelectedItem().toString().equals("Rating"))
                     sort = "r";
@@ -153,7 +152,6 @@ public class MainActivity extends Activity {
         retrieveFeedTask.execute(url_search + "?key=" + api_key);
     }
 
-
     class RetrieveFeedTask extends AsyncTask<String, String, List<Recipe>> {
 
         private ProgressDialog dialog;
@@ -162,64 +160,18 @@ public class MainActivity extends Activity {
             dialog = new ProgressDialog(MainActivity.this);
         }
 
-
         protected void onPreExecute() {
             this.dialog.setMessage("Please wait for request");
             this.dialog.show();
         }
 
         protected List<Recipe> doInBackground(String... urls) {
-            //  android.os.Debug.waitForDebugger();
-            recipeList = new ArrayList<>();
-            JSONArray jsonArray = null;
-            HttpClient client = new DefaultHttpClient();
-            HttpGet request = new HttpGet(urls[0]);
-            HttpResponse response;
+            recipesServiсe = new RecipesServiсe();
             try {
-                response = client.execute(request);
-
-                BufferedReader reader = new BufferedReader(new InputStreamReader(response.getEntity().getContent(), "UTF-8"));
-                String json = reader.readLine();
-                if (json.contains("error")) {
-
-                    publishProgress("Server is no response");
-                    return null;
-
-                }
-                JSONObject mainJsonObject = new JSONObject(json);
-                jsonArray = mainJsonObject.getJSONArray("recipes");
-
-                for (int i = 0; i < jsonArray.length() && i < count; i++) {
-
-                    Recipe recipe = new Recipe();
-
-                    JSONObject jsonObject = jsonArray.getJSONObject(i);
-                    recipe.setPublisher(Html.fromHtml(jsonObject.getString("publisher")).toString());
-                    recipe.setSocial_rank(Html.fromHtml(jsonObject.getString("social_rank")).toString());
-                    recipe.setF2f_url(Html.fromHtml(jsonObject.getString("f2f_url")).toString());
-                    recipe.setTitle(Html.fromHtml(jsonObject.getString("title")).toString());
-                    recipe.setSource_url(Html.fromHtml(jsonObject.getString("source_url")).toString());
-                    recipe.setRecipe_id(Html.fromHtml(jsonObject.getString("recipe_id")).toString());
-                    recipe.setImage_url(Html.fromHtml(jsonObject.getString("image_url")).toString());
-                    recipe.setPublisher_url(Html.fromHtml(jsonObject.getString("publisher_url")).toString());
-                    try {
-
-                        InputStream in = new java.net.URL(recipe.getImage_url()).openStream();
-                        Bitmap bitmap = BitmapFactory.decodeStream(in);
-                        recipe.setImage(bitmap);
-                    } catch (MalformedURLException e) {
-                        e.printStackTrace();
-                    }
-
-                    recipeList.add(recipe);
-                }
-
-            } catch (ClientProtocolException e) {
-                e.printStackTrace();
-            } catch (IOException e) {
-                e.printStackTrace();
+                recipeList = recipesServiсe.getRecipeList(urls[0], count);
             } catch (JSONException e) {
-                e.printStackTrace();
+                publishProgress("Server is not responding");
+                return null;
             }
 
             return recipeList;
@@ -232,7 +184,6 @@ public class MainActivity extends Activity {
                 dialog.dismiss();
             }
             showErrorDialog(values[0]);
-
         }
 
         protected void onPostExecute(List<Recipe> recipes) {
@@ -257,7 +208,6 @@ public class MainActivity extends Activity {
                     @Override
                     public void onClick(DialogInterface dialog, int whichButton) {
                         dialog.cancel();
-
                     }
                 });
                 final android.app.AlertDialog alert = dialog.create();
@@ -295,5 +245,4 @@ public class MainActivity extends Activity {
         fragmentTransaction.replace(R.id.fragment_container, gridFragment, "1");
         fragmentTransaction.commit();
     }
-
 }

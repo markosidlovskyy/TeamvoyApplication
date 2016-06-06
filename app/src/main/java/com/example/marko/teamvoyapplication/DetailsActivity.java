@@ -69,7 +69,6 @@ public class DetailsActivity extends Activity {
 
     }
 
-
     class GetRecipeTask extends AsyncTask<String, String, Recipe> {
 
         private ProgressDialog dialog;
@@ -78,7 +77,6 @@ public class DetailsActivity extends Activity {
             dialog = new ProgressDialog(DetailsActivity.this);
         }
 
-
         protected void onPreExecute() {
             this.dialog.setMessage("Please wait for request");
             this.dialog.show();
@@ -86,7 +84,6 @@ public class DetailsActivity extends Activity {
 
         protected Recipe doInBackground(String... urls) {
             //  android.os.Debug.waitForDebugger();
-
 
             JSONArray jsonArray = null;
             HttpClient client = new DefaultHttpClient();
@@ -120,7 +117,6 @@ public class DetailsActivity extends Activity {
                     e.printStackTrace();
                 }
 
-
             } catch (ClientProtocolException e) {
                 e.printStackTrace();
             } catch (IOException e) {
@@ -130,8 +126,6 @@ public class DetailsActivity extends Activity {
             }
 
             return recipe;
-
-
         }
 
         @Override
@@ -183,14 +177,12 @@ public class DetailsActivity extends Activity {
         if (width / density < 150)
             return image;
 
-
         float d = width / height;
         android.view.ViewGroup.LayoutParams layoutParams = imageView.getLayoutParams();
         layoutParams.width = 150 * density;
         layoutParams.height = (int) ((150 * density) / d);
 
         imageView.setLayoutParams(layoutParams);
-
 
         return image;
     }
