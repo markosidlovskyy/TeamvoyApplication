@@ -158,7 +158,7 @@ public class MainActivity extends Activity {
             recipesServiсe = new RecipesServiсe();
             try {
                 recipeList = recipesServiсe.getRecipeList(urls[0], count);
-            } catch (InternalErrorException e) {
+            } catch (RecipesServiceException e) {
                 publishProgress("Server return: Internal error");
             } catch (JSONException e) {
                 publishProgress("Cannot get response");

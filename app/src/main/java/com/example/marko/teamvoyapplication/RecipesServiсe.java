@@ -26,7 +26,7 @@ public class RecipesServiсe {
 
     List<Recipe> recipeList;
 
-    public List<Recipe> getRecipeList(String url, int count) throws InternalErrorException, JSONException, IOException {
+    public List<Recipe> getRecipeList(String url, int count) throws RecipesServiceException, JSONException, IOException {
         JSONArray jsonArray = null;
         recipeList = new ArrayList<>();
         HttpClient client = new DefaultHttpClient();
@@ -38,7 +38,7 @@ public class RecipesServiсe {
         BufferedReader reader = new BufferedReader(new InputStreamReader(response.getEntity().getContent(), "UTF-8"));
         String json = reader.readLine();
         if (json.contains("error")) {
-            throw new InternalErrorException();
+            throw new RecipesServiceException();
         }
 
         JSONObject mainJsonObject = new JSONObject(json);
